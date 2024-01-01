@@ -1,0 +1,10 @@
+[
+  {
+    "email": "firstuser@user.ru",
+    "hashed_password": "hashed_password_1"
+  },
+  {
+    "email": "seconduser@user.ru",
+    "hashed_password": "hashed_password_2"
+  }
+]
