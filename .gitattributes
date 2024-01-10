@@ -1,0 +1,2 @@
+docker/app.sh -text
+docker/celery.sh -text

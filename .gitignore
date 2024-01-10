@@ -1,3 +1,5 @@
 venv
 .pytest_cache
 .env
+.env-non-dev
+.idea

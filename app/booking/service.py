@@ -41,6 +41,7 @@ class BookingService(BaseService):
         rooms_left: int = await BookingService.find_free_by_id(
             room_id, date_from, date_to
         )
+        rooms_left = rooms_left or 0
         async with async_session_maker() as session:
             if rooms_left > 0:
                 get_price = select(RoomModel.price).filter_by(id=room_id)

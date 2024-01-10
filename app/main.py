@@ -8,6 +8,7 @@ from fastapi_cache.backends.redis import RedisBackend
 from fastapi_cache.decorator import cache
 from redis import asyncio as aioredis
 from sqladmin import Admin
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.logger import logger
 from app.adminpanel.auth_admin import authentication_backend
@@ -27,6 +28,12 @@ sentry_sdk.init(
     dsn="https://23f5a81de2611de1357e8c787950d5a7@o4506490099924992.ingest.sentry.io/4506490104643584",
     enable_tracing=True,
 )
+
+instrumentator = Instrumentator(
+    should_group_status_codes=False,
+    excluded_handlers=['.*admin.*', '/metrics'],
+)
+instrumentator.instrument(app).expose(app)
 
 admin = Admin(app, engine=engine, authentication_backend=authentication_backend)
 admin.add_view(UserAdmin)

@@ -2,6 +2,7 @@ from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
+from app.exceptions import IncorrectRoleAdmin
 from app.secure.auth import authenticate_user
 from app.secure.tokens import create_access_token
 from app.user.dependencies import get_current_user
@@ -30,8 +31,8 @@ class AdminAuth(AuthenticationBackend):
             return RedirectResponse(request.url_for('admin:login'), status_code=302)
 
         user = await get_current_user(token)
-        if not user:
-            return RedirectResponse(request.url_for('admin:login'), status_code=302)
+        if not user.is_admin:
+            raise IncorrectRoleAdmin
 
         return True
 

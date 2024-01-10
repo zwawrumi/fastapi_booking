@@ -2,9 +2,12 @@ from datetime import date
 
 from fastapi import APIRouter
 
+
+
 from app.exceptions import NotFoundException
 from app.hotels.schemas import SFreeHotels, SHotels
 from app.hotels.service import HotelService
+
 
 router = APIRouter(prefix='/hotel', tags=['Hotels'])
 
@@ -27,3 +30,6 @@ async def get_hotel(hotel_id: int) -> SHotels:
     if not hotel:
         raise NotFoundException
     return hotel
+
+
+
