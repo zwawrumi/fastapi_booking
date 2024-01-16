@@ -57,3 +57,13 @@ class NotFoundException(BookingException):
 class UserNotFoundException(BookingException):
     status_code = status.HTTP_401_UNAUTHORIZED
     detail = 'User not found'
+
+
+class CannotAddDataToDatabase(BookingException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail = 'Cannot add test_db'
+
+
+class CannotProcessCSV(BookingException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail = 'Cannot convert CSV'

@@ -9,6 +9,7 @@ from fastapi_cache.decorator import cache
 from redis import asyncio as aioredis
 from sqladmin import Admin
 from prometheus_fastapi_instrumentator import Instrumentator
+from starlette.middleware.cors import CORSMiddleware
 
 from app.logger import logger
 from app.adminpanel.auth_admin import authentication_backend
@@ -20,6 +21,7 @@ from app.hotels.router import router as hotel_router
 from app.images.router import router as image_router
 from app.pages.router import router as pages_router
 from app.user.router import router as user_router
+from app.test_data.router import router as test_data_router
 from config import settings
 
 app = FastAPI()
@@ -43,6 +45,20 @@ admin.add_view(HotelAdmin)
 
 app.mount('/static', StaticFiles(directory='app/static'), 'static')
 
+origins = [
+    'http://localhost:3000',
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['GET', 'POST', 'OPTIONS', 'DELETE', 'PATCH', 'PUT'],
+    allow_headers=[
+        'Content-Type', 'Set-Cookie', 'Access-Control-Allow-Headers',
+        'Access-Control-Allow-Origin', 'Authorization'
+    ],
+)
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
@@ -62,6 +78,7 @@ app.include_router(router=room_router)
 app.include_router(router=hotel_router)
 app.include_router(router=pages_router)
 app.include_router(router=image_router)
+app.include_router(router=test_data_router)
 
 
 @cache()

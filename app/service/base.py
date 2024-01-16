@@ -1,6 +1,8 @@
 from sqlalchemy import insert, select
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.database import async_session_maker
+from app.logger import logger
 from app.user.schemas import UserResponse
 
 
@@ -32,8 +34,31 @@ class BaseService:
             return result.scalars().all()
 
     @classmethod
-    async def add(cls, **data):
+    async def add(cls, data):
         async with async_session_maker() as session:
-            query = insert(cls.model).values(**data)
+            query = insert(cls.model).values(data)
             await session.execute(query)
             await session.commit()
+
+    @classmethod
+    async def add_objects(cls, *data):
+        """Add obj to DB"""
+        try:
+            query = insert(cls.model).values(*data).returning(cls.model.id)
+            async with async_session_maker() as session:
+                result = await session.execute(query)
+                await session.commit()
+                return result.mappings().first()
+        except (SQLAlchemyError, Exception) as error:
+            if isinstance(error, SQLAlchemyError):
+                message = 'Database Exception'
+            elif isinstance(error, Exception):
+                message = 'Unknown Exception'
+            message += ':DATA load fail'
+
+            logger.error(
+                message,
+                extra={'table': cls.model.__tablename__},
+                exc_info=True
+            )
+            return None
